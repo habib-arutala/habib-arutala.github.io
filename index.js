@@ -178,52 +178,52 @@ function scaleUpdate(event) {
     }
 }
 
-// function touchMove(event) {
-//     if (isMouseDown != true)
-//         return;
-//     if (pivot == undefined)
-//         return;
+function touchMove(event) {
+    if (isMouseDown != true)
+        return;
+    if (pivot == undefined)
+        return;
 
-//     var touches = event.changedTouches;
+    var touches = event.changedTouches;
 
-//     mouse.x = (touches[0].clientX / window.innerWidth) * 2 - 1;
-//     mouse.y = - (touches[0].clientY / window.innerHeight) * 2 + 1;
+    mouse.x = (touches[0].clientX / window.innerWidth) * 2 - 1;
+    mouse.y = - (touches[0].clientY / window.innerHeight) * 2 + 1;
 
-//     difference.x = mouse.x - lastMouse.x;
-//     difference.y = mouse.y - lastMouse.y;
+    difference.x = mouse.x - lastMouse.x;
+    difference.y = mouse.y - lastMouse.y;
 
-//     lastMouse.x = mouse.x;
-//     lastMouse.y = mouse.y;
+    lastMouse.x = mouse.x;
+    lastMouse.y = mouse.y;
 
-//     console.log(mouse);
+    console.log(mouse);
 
-//     pivot.rotation.y += difference.x * 2;
-//     pivot.rotation.x -= difference.y;
+    pivot.rotation.y += difference.x * 2;
+    pivot.rotation.x -= difference.y;
 
-//     if (pivot.rotation.x > 1)
-//         pivot.rotation.x = 1;
-//     else if (pivot.rotation.x < -1)
-//         pivot.rotation.x = -1;
-// }
+    if (pivot.rotation.x > 1)
+        pivot.rotation.x = 1;
+    else if (pivot.rotation.x < -1)
+        pivot.rotation.x = -1;
+}
 
-// function touchStart(event) {
-//     isMouseDown = true;
-//     var touches = event.changedTouches;
-//     lastMouse.x = (touches[0].clientX / window.innerWidth) * 2 - 1;
-//     lastMouse.y = - (touches[0].clientY / window.innerHeight) * 2 + 1;
-//     autoRotate = false;
-//     waitAutoRotate = false;
-// }
+function touchStart(event) {
+    isMouseDown = true;
+    var touches = event.changedTouches;
+    lastMouse.x = (touches[0].clientX / window.innerWidth) * 2 - 1;
+    lastMouse.y = - (touches[0].clientY / window.innerHeight) * 2 + 1;
+    autoRotate = false;
+    waitAutoRotate = false;
+}
 
-// function touchEnd(event) {
-//     isMouseDown = false;
-//     waitAutoRotate = true;
-// }
+function touchEnd(event) {
+    isMouseDown = false;
+    waitAutoRotate = true;
+}
 
 container.addEventListener('mousemove', onMouseMove, false);
 container.addEventListener('mousedown', onMouseDown, false);
 container.addEventListener('mouseup', onMouseUp, false);
-// container.addEventListener('touchmove', touchMove, false);
-// container.addEventListener('touchstart', touchStart, false);
-// container.addEventListener('touchend', touchEnd, false);
+container.addEventListener('touchmove', touchMove, false);
+container.addEventListener('touchstart', touchStart, false);
+container.addEventListener('touchend', touchEnd, false);
 container.addEventListener('wheel', onWheel, false);
