@@ -9,10 +9,17 @@
     
     <script type="text/javascript" src="js/libs/three.min.js"></script>
     <script type="text/javascript" src="js/loaders/GLTFLoader.js"></script>
+    <link rel="stylesheet" href="index.css">
 </head>
 
 <body style="margin: 0;">
     <script type="module" src="index.js"></script>
+    <div class="grid-container">
+        <div class="grid-item" id="canvas-container"></div>
+        <div class="slider-container grid-item">
+            <input type="range" id="scale-slider" orient="vertical" min="-100" max="100" value="0"/>
+        </div>
+    </div>
 </body>
 
 </html>

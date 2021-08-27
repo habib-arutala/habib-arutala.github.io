@@ -1,0 +1,45 @@
+html{
+    height: 100%;
+    width: 100%;
+}
+
+body{
+    background-color: #e0e0e0;
+    height: 100%;
+    width: 100%;
+}
+
+.grid-container{
+    display: grid;
+    height: 100%;
+    width: 100%;
+    grid-template-columns: 90% 10%;
+}
+
+#canvas-container{
+    touch-action: none;
+}
+
+.grid-item{
+    height: 100%;
+}
+
+.slider-container{
+    display: -webkit-box;  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+    display: -ms-flexbox;  /* TWEENER - IE 10 */
+    display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
+    display: flex;         /* NEW, Spec - Firefox, Chrome, Opera */
+    
+    justify-content: center;
+    align-items: center;
+    touch-action: none;
+}
+
+input[type=range][orient=vertical]
+{
+    writing-mode: bt-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* WebKit */
+    width: 8px;
+    height: 250px;
+    padding: 0 5px;
+}

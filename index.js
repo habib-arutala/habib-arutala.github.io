@@ -1,6 +1,6 @@
 //init scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xf0f0f0);
+scene.background = new THREE.Color(0xe0e0e0);
 
 //init camera
 const camera = new THREE.PerspectiveCamera(
@@ -14,13 +14,17 @@ camera.position.y = 0;
 
 //init renderer
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize(
-    window.innerWidth,
-    window.innerHeight
-);
+
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-document.body.appendChild(renderer.domElement);
+const container = document.getElementById("canvas-container");
+var canvasHeight = container.clientHeight;
+var canvasWidth = container.clientWidth;
+renderer.setSize(
+    canvasWidth,
+    canvasHeight
+);
+container.appendChild(renderer.domElement);
 
 //Create a DirectionalLight and turn on shadows for the light
 const light = new THREE.DirectionalLight(0xffffff, 1, 1);
@@ -49,6 +53,10 @@ var aRCounter = 0;
 var mouse = new THREE.Vector2();
 var lastMouse = new THREE.Vector2();
 var difference = new THREE.Vector2();
+var basicScale = new THREE.Vector3();
+basicScale.x = 1;
+basicScale.y = 1;
+basicScale.z = 1;
 var isMouseDown = false;
 function onMouseMove(event) {
     if (isMouseDown != true)
@@ -93,7 +101,7 @@ function onWheel(event) {
 
     var value = event.deltaY / -1000;
     var scale = pivot.scale.x
-    if(scale + value <= 0.1)
+    if (scale + value <= 0.1)
         return;
     pivot.scale.x += value;
     pivot.scale.y += value;
@@ -106,17 +114,17 @@ function Update() {
 
     if (pivot != undefined) {
         camera.lookAt(pivot.position);
-        if(autoRotate){
+        if (autoRotate) {
             pivot.rotation.y += 0.05;
         }
     }
 
-    if(!waitAutoRotate){
+    if (!waitAutoRotate) {
         aRCounter = 0;
     }
-    else{
+    else {
         aRCounter += 1;
-        if(aRCounter >= autoRotateTimeOut){
+        if (aRCounter >= autoRotateTimeOut) {
             autoRotate = true;
             waitAutoRotate = false;
         }
@@ -158,7 +166,64 @@ function GetURLParameter(sParam) {
 }
 GetURLParameter("model");
 
-window.addEventListener('mousemove', onMouseMove, false);
-window.addEventListener('mousedown', onMouseDown, false);
-window.addEventListener('mouseup', onMouseUp, false);
-window.addEventListener('wheel', onWheel, false);
+var slider = document.getElementById("scale-slider");
+slider.addEventListener('input', scaleUpdate)
+
+function scaleUpdate(event) {
+    if (pivot != undefined) {
+        var value = slider.value / 100;
+        pivot.scale.x = basicScale.x + value;
+        pivot.scale.y = basicScale.y + value;
+        pivot.scale.z = basicScale.z + value;
+    }
+}
+
+function touchMove(event) {
+    if (isMouseDown != true)
+        return;
+    if (pivot == undefined)
+        return;
+
+    var touches = event.changedTouches;
+
+    mouse.x = (touches[0].clientX / window.innerWidth) * 2 - 1;
+    mouse.y = - (touches[0].clientY / window.innerHeight) * 2 + 1;
+
+    difference.x = mouse.x - lastMouse.x;
+    difference.y = mouse.y - lastMouse.y;
+
+    lastMouse.x = mouse.x;
+    lastMouse.y = mouse.y;
+
+    console.log(mouse);
+
+    pivot.rotation.y += difference.x * 2;
+    pivot.rotation.x -= difference.y;
+
+    if (pivot.rotation.x > 1)
+        pivot.rotation.x = 1;
+    else if (pivot.rotation.x < -1)
+        pivot.rotation.x = -1;
+}
+
+function touchStart(event) {
+    isMouseDown = true;
+    var touches = event.changedTouches;
+    lastMouse.x = (touches[0].clientX / window.innerWidth) * 2 - 1;
+    lastMouse.y = - (touches[0].clientY / window.innerHeight) * 2 + 1;
+    autoRotate = false;
+    waitAutoRotate = false;
+}
+
+function touchEnd(event) {
+    isMouseDown = false;
+    waitAutoRotate = true;
+}
+
+container.addEventListener('mousemove', onMouseMove, false);
+container.addEventListener('mousedown', onMouseDown, false);
+container.addEventListener('mouseup', onMouseUp, false);
+container.addEventListener('touchmove', touchMove, false);
+container.addEventListener('touchstart', touchStart, false);
+container.addEventListener('touchend', touchEnd, false);
+container.addEventListener('wheel', onWheel, false);
