@@ -99,6 +99,7 @@ class App {
 		document.body.addEventListener("touchstart", this.onTouchStart);
 		document.body.addEventListener("touchend", this.onTouchEnd);
 		document.body.addEventListener("touchmove", this.onTouchMove);
+		this.getURLParameter("model");
 	}
 
 	/**
@@ -185,11 +186,13 @@ class App {
 		if (window.sunflower) {
 			if (this.isObjectSpawned == true)
 				return;
-			const clone = window.sunflower.clone();
-			clone.position.copy(this.reticle.position);
-			this.scene.add(clone);
+			// const clone = window.sunflower.clone();
+			// clone.position.copy(this.reticle.position);
+			// this.scene.add(clone);
+
 			this.scene.remove(this.reticle);
-			this.object = clone;
+			this.object.position.copy(this.reticle.position);
+			this.scene.add(this.object);
 			this.isObjectSpawned = true;
 
 			// const shadowMesh = this.scene.children.find(c => c.name === 'shadowMesh');
@@ -197,7 +200,7 @@ class App {
 		}
 	}
 
-	constructor(){
+	constructor() {
 		this.isObjectSpawned = false;
 		this.object = undefined;
 		this.touched = false;
@@ -207,10 +210,11 @@ class App {
 		this.secondValue = new THREE.Vector2();
 		this.lastScaleDifference = 0;
 		this.scaleDifference = 0;
+		this.objModel = undefined;
 	}
 
 	onTouchStart = (event) => {
-		if(this.object == undefined){
+		if (this.object == undefined) {
 			return;
 		}
 		this.touched = true;
@@ -219,7 +223,7 @@ class App {
 		this.lastTouch.x = (firstTouch.clientX / window.innerWidth) * 2 - 1;
 		this.lastTouch.y = (firstTouch.clientY / window.innerHeight);
 
-		if(event.touches.length > 1){
+		if (event.touches.length > 1) {
 			var firstTouch = event.touches[0];
 			var secondTouch = event.touches[1];
 
@@ -234,20 +238,20 @@ class App {
 	}
 
 	onTouchEnd = (event) => {
-		if(this.object == undefined){
+		if (this.object == undefined) {
 			return;
 		}
 		this.touched = false;
 	}
 
 	onTouchMove = (event) => {
-		if(this.object == undefined){
+		if (this.object == undefined) {
 			return;
 		}
 		var firstTouch = event.touches[0];
 		var pinching = false;
 
-		if(event.touches.length > 1){
+		if (event.touches.length > 1) {
 			pinching = true;
 			var secondTouch = event.touches[1];
 			this.secondValue.x = (secondTouch.clientX / window.innerWidth) * 2 - 1;
@@ -257,16 +261,16 @@ class App {
 		this.firstValue.x = (firstTouch.clientX / window.innerWidth) * 2 - 1;
 		this.firstValue.y = (firstTouch.clientY / window.innerHeight);
 
-		if(pinching == false){
+		if (pinching == false) {
 			this.difference.x = this.firstValue.x - this.lastTouch.x;
 			this.difference.y = this.firstValue.y - this.lastTouch.y;
-	
+
 			this.lastTouch.x = this.firstValue.x;
 			this.lastTouch.y = this.firstValue.y;
-	
+
 			this.object.rotation.y += this.difference.x * 2;
 		}
-		else{
+		else {
 			this.scaleDifference = this.firstValue.distanceTo(this.secondValue);
 
 			var difference = this.scaleDifference - this.lastScaleDifference;
@@ -277,6 +281,36 @@ class App {
 
 			this.lastScaleDifference = this.scaleDifference
 		}
+	}
+
+	getURLParameter = (sParam) => {
+		// console.log(parameter);
+		var sPageURL = window.location.search.substring(1);
+		var sURLVariables = sPageURL.split('&');
+		for (var i = 0; i < sURLVariables.length; i++) {
+			var sParameterName = sURLVariables[i].split('=');
+			if (sParameterName[0] == sParam) {
+				console.log(sParameterName[1]);
+				const objectGltf = gltfLoader.load(sParameterName[1], (model) => this.modelLoaded(model), undefined,
+					function (error) {
+						console.error(error);
+					});
+			}
+		}
+	}
+
+	modelLoaded = (model) => {
+		console.log(model.scene);
+		this.objModel = model.scene;
+		this.objModel.scale.set(0.2, 0.2, 0.2);
+		this.objModel.position.set(0, 0, 0);
+
+		var box = new THREE.Box3().setFromObject(this.objModel);
+		box.getCenter(this.objModel.position);
+		this.objModel.position.multiplyScalar(- 1);
+
+		this.object = new THREE.Group();
+		this.object.add(this.objModel);
 	}
 }
 
