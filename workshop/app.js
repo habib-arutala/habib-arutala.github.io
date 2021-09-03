@@ -47,6 +47,11 @@ class App {
 				domOverlay: { root: document.body }
 			});
 
+			
+			document.getElementById("stabilization").style.removeProperty("display");
+			document.getElementById("enter-ar-info").style.removeProperty("display");
+			document.getElementById("unsupported-info").style.removeProperty("display");
+
 			/** Create the canvas that will contain our camera's background and our virtual scene. */
 			this.createXRCanvas();
 
@@ -100,6 +105,8 @@ class App {
 		document.body.addEventListener("touchend", this.onTouchEnd);
 		document.body.addEventListener("touchmove", this.onTouchMove);
 		this.getURLParameter("model");
+
+		this.button.style.display = "inline-block";
 	}
 
 	/**
@@ -140,6 +147,8 @@ class App {
 			}
 			if (hitTestResults.length > 0) {
 				const hitPose = hitTestResults[0].getPose(this.localReferenceSpace);
+
+				this.reticlePlaced = true;
 
 				/** Update the reticle position. */
 				this.reticle.visible = true;
@@ -184,7 +193,7 @@ class App {
 	/** Place a sunflower when the screen is tapped. */
 	onSelect = () => {
 		if (window.sunflower) {
-			if (this.isObjectSpawned == true)
+			if (this.isObjectSpawned == true || this.reticlePlaced == false)
 				return;
 			// const clone = window.sunflower.clone();
 			// clone.position.copy(this.reticle.position);
@@ -211,6 +220,22 @@ class App {
 		this.lastScaleDifference = 0;
 		this.scaleDifference = 0;
 		this.objModel = undefined;
+		this.reticlePlaced = false;
+
+		this.button = document.getElementById("backButton");
+		this.button.onclick = () => {
+			console.log("lol");
+			console.log(this.xrSession);
+			this.xrSession.end();
+			this.isObjectSpawned = false;
+			this.reticlePlaced = false;
+			this.stabilized = false;
+			document.body.classList.remove('stabilized');
+			document.getElementById("stabilization").style.display = "none";
+			document.getElementById("enter-ar-info").style.display = "flex";
+			document.getElementById("unsupported-info").style.display = "none";
+			document.getElementById("backButton").style.display = "none";
+		}
 	}
 
 	onTouchStart = (event) => {
@@ -302,7 +327,7 @@ class App {
 	modelLoaded = (model) => {
 		console.log(model.scene);
 		this.objModel = model.scene;
-		this.objModel.scale.set(0.2, 0.2, 0.2);
+		this.objModel.scale.set(0.1, 0.1, 0.1);
 		this.objModel.position.set(0, 0, 0);
 
 		var box = new THREE.Box3().setFromObject(this.objModel);
